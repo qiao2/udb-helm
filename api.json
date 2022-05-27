@@ -1,0 +1,364 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0",
+    "title": "UJTL Service",
+    "description": "API for importing and editing UJTL Task Report"
+  },
+  "host": "UDB_SERVICE_HOST",
+  "basePath": "/udb/v1",
+  "tags": [
+    {
+      "name": "udb",
+    }
+  ],
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/tasks/import": {
+      "post": {
+        "tags": [
+          "udb"
+        ],
+        "summary": "Import",
+        "description": "Import a Task Report file (XML). Will override any existing tables in the database with new data.",
+        "operationId": "import",
+        "consumes": [
+          "multipart/form-data"
+        ],
+        "parameters": [
+          {
+            "name": "inputFile",
+            "in": "formData",
+            "description": "Task Report XML file",
+            "required": true,
+            "type": "file"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/tasks": {
+      "get": {
+        "tags": [
+          "udb"
+        ],
+        "summary": "Find Tasks",
+        "description": "Find tasks, filtered by query parameters",
+        "operationId": "findTasks",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "summaryOutput",
+            "in": "query",
+            "description": "output summary rather than full json data (default = false)",
+            "required": false,
+            "type": "boolean"
+          },
+          {
+            "name": "name",
+            "in": "query",
+            "description": "filter by task name (includes partial matches)",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "nextToken",
+            "in": "query",
+            "description": "id of next task to get",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "max number of results per page",
+            "required": false,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "udb"
+        ],
+        "summary": "Create New Task",
+        "description": "Create a new task",
+        "operationId": "createTask",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+		  {
+            "in": "body",
+            "name": "body",
+            "description": "Task object to be created",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }
+		],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+    "/tasks/{id}": {
+      "get": {
+        "tags": [
+          "udb"
+        ],
+        "summary": "Get Task",
+        "description": "Get task by Task ID",
+        "operationId": "getTask",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Task ID to get",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "udb"
+        ],
+        "summary": "Update existing task",
+        "operationId": "updateTask",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Task ID to update",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+		  {
+            "in": "body",
+            "name": "body",
+            "description": "Task object to be created",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Task"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "udb"
+        ],
+        "summary": "Delete task",
+        "description": "",
+        "operationId": "deleteTask",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Task ID to delete",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "$ref": "#/definitions/ApiResponse"
+            }
+          }
+        }
+      }
+    },
+  },
+  "definitions": {
+    "ApiResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "type": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "Task": {
+	  "type": "object",
+      "required":[
+        "taskId",
+      ],
+	  "properties": {
+        "taskType": { 
+		  "type": "string",
+		  "example": "UJTL"
+		},
+        "urgentCrFlag": { 
+		  "type": "boolean",
+		  "example": false
+		},
+        "taskDescription": {
+		  "type": "string",
+		  "example": "description"
+		},
+        "taskPrefix": {
+		  "type": "string",
+		  "example": "SN"
+		},
+        "taskNumber": {
+		  "type": "string",
+		  "example": "1"
+		},
+        "taskId": {
+		  "type": "string",
+		  "example": "0000"
+		},
+        "taskName": {
+		  "type": "string",
+		  "example": "name"
+		},
+        "userId": {
+		  "type": "string",
+		  "example": "000000"
+		},
+        "approvalDate": {
+		  "type": "string",
+		  "example": "2021-10-31"
+		},
+        "taskNote": {
+		  "type": "string",
+		  "example": "notes"
+		},
+        "measures": {
+          "type":"array",
+          "items": {
+            "$ref":"#/definitions/Measure"
+          }
+        },
+        "references": {
+          "type":"array",
+          "items": {
+            "$ref":"#/definitions/Reference"
+          }
+        }
+	  }
+    },
+	"Measure": {
+	  "type": "object",
+      "required": [
+        "id",
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+		  "example": "111111"
+        },
+        "viewOrder": {
+          "type": "integer",
+		  "example": 1
+        },
+        "msrNumber": {
+          "type": "string",
+		  "example": "0"
+        },
+        "msrScale": {
+          "type": "string",
+		  "example": "Percent"
+        },
+        "msrDescription": {
+          "type": "string",
+		  "example": "description"
+        },
+        "dateCreated": {
+          "type": "string",
+		  "example": "2021-10-31"
+        }
+      }	
+	},
+	"Reference": {
+	  "type": "object",
+      "required": [
+        "id",
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+		  "example": "222222"
+        },
+        "pubNumber": {
+          "type": "string",
+		  "example": "XX 0-00"
+        },
+        "dateCreated": {
+          "type": "string",
+		  "example": "2021-10-31"
+        }
+      }	
+	}
+  }
+}
