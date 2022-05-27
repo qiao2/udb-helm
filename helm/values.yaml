@@ -37,6 +37,7 @@ ui:
   udbServiceHost: udb-api-route-udb.apps-crc.testing
   buildConfig:
     uri: https://github.com/qiao2/udb-helm.git
+    contextDir: .
   imageStream:
     namespace: pipeline
     name: swagger-ui-helm
